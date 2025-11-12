@@ -1,0 +1,188 @@
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+public class ChatbotAI : MonoBehaviour
+{
+    [Header("UI References")]
+    public TMP_InputField userInput;
+    public TMP_Text chatDisplay;
+
+    private Dictionary<string, string> faqDatabase;
+
+    void Start()
+    {
+        // Sample FAQ data
+        faqDatabase = new Dictionary<string, string>()
+        {
+            { "hello", "Hi there! How can I help you today?" },
+{ "hi", "Hello! What do you want to know?" },
+{ "unity", "Unity is a game engine to create games and apps." },
+{ "save project", "Go to File → Save Project to store your work." },
+{ "play game", "Click Play ▶️ in the Unity Editor to test your project." },
+{ "gameobject", "A GameObject is any object in your scene." },
+{ "prefab", "A prefab is a reusable GameObject template." },
+{ "c#", "C# is the programming language used in Unity." },
+{ "thank you", "You're welcome! Keep learning Unity!" },
+{ "bye", "Goodbye! See you later!" },
+{ "add component", "Select a GameObject and click Add Component in the Inspector." },
+{ "rigidbody", "A Rigidbody allows a GameObject to react to physics." },
+{ "collider", "A Collider defines the shape of a GameObject for physical collisions." },
+{ "material", "Materials define how a surface looks in Unity." },
+{ "shader", "Shaders are scripts that define how materials are rendered." },
+{ "script", "A script controls the behavior of GameObjects." },
+{ "canvas", "Canvas is the area where UI elements are drawn." },
+{ "ui text", "Text component is used to show text on the UI." },
+{ "button", "A Button component can detect clicks and trigger actions." },
+{ "input field", "Input Field allows users to type text in UI." },
+{ "scrollview", "ScrollView allows scrolling through content in UI." },
+{ "animation", "Animation component animates GameObjects over time." },
+{ "animator", "Animator controls animations and state machines." },
+{ "rigging", "Rigging sets up bones for 3D models to animate." },
+{ "sprite", "A Sprite is a 2D image used in 2D games." },
+{ "sprite renderer", "Sprite Renderer draws a sprite in the scene." },
+{ "light", "Light illuminates objects in the scene." },
+{ "directional light", "A Directional Light simulates sunlight in the scene." },
+{ "point light", "A Point Light emits light in all directions from a point." },
+{ "spotlight", "A Spotlight emits light in a cone shape." },
+{ "camera", "A Camera renders what is visible on the screen." },
+{ "main camera", "The Main Camera is the default camera that shows your game view." },
+{ "prefab variant", "A Prefab Variant inherits properties from another prefab but allows overrides." },
+{ "particle system", "A Particle System is used for visual effects like smoke or fire." },
+{ "physics", "Physics simulates real-world forces and collisions." },
+{ "gravity", "Gravity applies a downward force on Rigidbodies." },
+{ "collider trigger", "A Collider can be set as a trigger to detect overlaps without physical collisions." },
+{ "layer", "Layers help organize GameObjects and define collision rules." },
+{ "tag", "Tags identify GameObjects for easy access via scripts." },
+{ "find object", "Use GameObject.Find() to locate objects in the scene." },
+{ "prefab instantiate", "Instantiate creates a new instance of a prefab at runtime." },
+{ "destroy", "Destroy() removes a GameObject from the scene." },
+{ "time.deltaTime", "Time.deltaTime represents the time passed since last frame." },
+{ "update function", "Update() runs every frame for your scripts." },
+{ "fixed update", "FixedUpdate() is called at fixed intervals for physics calculations." },
+{ "late update", "LateUpdate() is called after Update(), useful for camera movement." },
+{ "input getkey", "Input.GetKey() detects if a key is pressed." },
+{ "input getkeydown", "Input.GetKeyDown() detects the frame a key was first pressed." },
+{ "input getmousebutton", "Input.GetMouseButton() detects mouse clicks." },
+{ "vector3", "Vector3 represents a position or direction in 3D space." },
+{ "transform position", "Transform.position defines the world position of a GameObject." },
+{ "transform rotation", "Transform.rotation defines the rotation of a GameObject." },
+{ "transform scale", "Transform.localScale defines the size of a GameObject." },
+{ "look at", "Transform.LookAt() makes an object face another object." },
+{ "lerp", "Lerp interpolates smoothly between two values." },
+{ "color", "Color defines the RGBA color value of a material or object." },
+{ "audio source", "Audio Source plays audio clips in your scene." },
+{ "audio clip", "Audio Clip is the sound file you want to play." },
+{ "play audio", "AudioSource.Play() plays the assigned audio clip." },
+{ "stop audio", "AudioSource.Stop() stops the audio playback." },
+{ "ui panel", "A Panel is a container for UI elements." },
+{ "anchor", "Anchors define how UI elements stretch or stick in the parent." },
+{ "pivot", "Pivot is the point around which UI elements rotate or scale." },
+{ "layout group", "Layout Group arranges UI elements automatically." },
+{ "vertical layout", "Vertical Layout Group stacks elements vertically." },
+{ "horizontal layout", "Horizontal Layout Group stacks elements horizontally." },
+{ "grid layout", "Grid Layout Group arranges elements in rows and columns." },
+{ "canvas scaler", "Canvas Scaler adjusts UI size based on screen resolution." },
+{ "event system", "Event System manages UI input events like clicks and touches." },
+{ "raycast", "Raycasts detect what object is under a point in space." },
+{ "physics raycast", "Physics.Raycast() detects collisions along a line." },
+{ "ui raycast", "Graphic Raycaster detects UI elements under pointer." },
+{ "player prefs", "PlayerPrefs stores simple data like scores or settings." },
+{ "scene", "A Scene contains all the objects and setup for a level or area." },
+{ "load scene", "Use SceneManager.LoadScene() to switch scenes." },
+{ "async load", "Load scenes asynchronously with SceneManager.LoadSceneAsync()." },
+{ "game loop", "The game loop continuously updates and renders your game." },
+{ "build settings", "Build Settings define platforms and options for building your game." },
+{ "platform", "Select your target platform (Windows, Android, iOS, etc.) in Build Settings." },
+{ "quality settings", "Adjust graphics quality for different devices." },
+{ "lightmap", "Lightmaps bake lighting into textures for static objects." },
+{ "occlusion culling", "Occlusion Culling improves performance by hiding unseen objects." },
+{ "navmesh", "NavMesh allows AI agents to navigate the environment." },
+{ "rigidbody constraints", "Constraints limit movement or rotation of a Rigidbody." },
+{ "joint", "Joints connect two Rigidbodies with physical constraints." },
+{ "hinge joint", "Hinge Joint allows rotation around one axis." },
+{ "spring joint", "Spring Joint simulates spring behavior between two objects." },
+{ "character controller", "Character Controller simplifies player movement and collision." },
+{ "animator controller", "Animator Controller manages animation states." },
+{ "blend tree", "Blend Tree smoothly blends multiple animations." },
+{ "timeline", "Timeline creates cinematic sequences or animations." },
+{ "cinemachine", "Cinemachine is Unity’s advanced camera system." },
+{ "particle collision", "Particles can detect collisions if enabled." },
+{ "physics material", "Physics Material defines friction and bounciness of colliders." },
+{ "scriptable object", "ScriptableObject stores data assets that can be reused." },
+{ "singleton", "Singleton ensures only one instance of a class exists." },
+{ "coroutine", "Coroutine allows code to wait without freezing the game." },
+{ "yield return", "Yield pauses the coroutine until a condition or time passes." },
+{ "debug log", "Debug.Log() prints messages to the Console for debugging." },
+{ "debug warn", "Debug.LogWarning() prints a warning message in Console." },
+{ "debug error", "Debug.LogError() prints an error message in Console." },
+{ "profiler", "Profiler helps you measure performance in Unity." },
+{ "editor", "The Editor is where you build and test your game." },
+{ "play mode", "Play Mode runs your game inside the Editor." },
+{ "asset store", "Asset Store has free and paid assets for Unity projects." },
+{ "package manager", "Package Manager installs Unity packages like TextMeshPro, Cinemachine, etc." },
+{ "textmesh pro", "TextMeshPro provides advanced text rendering in Unity." },
+{ "ui image", "Image component displays pictures in UI." },
+{ "button click", "Add an OnClick() event to trigger actions when pressed." },
+{ "toggle", "Toggle allows switching on/off a value in UI." },
+{ "slider", "Slider allows selecting a value in a range." },
+{ "scrollbar", "Scrollbar allows scrolling through content manually." },
+{ "dropdown", "Dropdown lets the user pick from multiple options." },
+{ "tooltip", "Tooltip shows information when hovering over UI elements." },
+{ "panel", "Panel organizes UI elements in a container." },
+{ "mask", "Mask hides parts of child elements outside the mask." },
+{ "rect transform", "RectTransform defines position, size, pivot, and anchors for UI elements." },
+{ "physics2d", "Physics2D handles collisions and forces for 2D objects." },
+{ "rigidbody2d", "Rigidbody2D allows 2D GameObjects to be affected by physics." },
+{ "collider2d", "Collider2D defines the shape of 2D objects for collision." },
+{ "box collider", "Box Collider is a rectangular collider in 2D or 3D." },
+{ "circle collider", "Circle Collider is a circular collider in 2D." },
+{ "polygon collider", "Polygon Collider is a collider with custom shape." },
+{ "edge collider", "Edge Collider is a collider made of lines only." },
+{ "tilemap", "Tilemap allows you to create 2D grid-based worlds." },
+{ "tilemap collider", "Tilemap Collider gives collision to tiles automatically." },
+{ "physics material2d", "Physics Material 2D defines friction and bounce for 2D colliders." },
+{ "camera follow", "Make the camera follow the player using script or Cinemachine." },
+{ "ui canvas", "Canvas is the root for all UI elements." }
+
+        };
+
+        // Starting message
+        chatDisplay.text = "Chatbot: Hello! Ask me any question about Unity.\n";
+    }
+
+    public void OnSendButtonClicked()
+    {
+        string question = userInput.text.ToLower().Trim();
+
+        if (string.IsNullOrEmpty(question))
+            return;
+
+        chatDisplay.text += "You: " + question + "\n";
+        userInput.text = "";
+
+        bool found = false;
+
+        foreach (var item in faqDatabase)
+        {
+            if (question.Contains(item.Key))
+            {
+                chatDisplay.text += "Chatbot: " + item.Value + "\n";
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            chatDisplay.text += "Chatbot: Sorry, I don’t have an answer for that.\n";
+        }
+
+        // Auto-scroll to bottom after updating text
+        Canvas.ForceUpdateCanvases();
+        ScrollRect scrollRect = chatDisplay.GetComponentInParent<ScrollRect>();
+        if (scrollRect != null)
+            scrollRect.verticalNormalizedPosition = 0f;
+    }
+}

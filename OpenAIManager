@@ -1,0 +1,56 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Networking;
+using System;
+
+public class OpenAIManager : MonoBehaviour
+{
+    [Header("OpenAI Settings")]
+    public string apiKey = "YOUR_OPENAI_API_KEY"; // <-- Replace with your OpenAI API key
+    private string apiUrl = "https://api.openai.com/v1/chat/completions";
+
+    // Call this function from ChatbotAI
+    public void SendMessageToAI(string userMessage, Action<string> callback)
+    {
+        StartCoroutine(CallOpenAI(userMessage, callback));
+    }
+
+    IEnumerator CallOpenAI(string message, Action<string> callback)
+    {
+        // Build JSON request body
+        string jsonData = JsonUtility.ToJson(new
+        {
+            model = "gpt-3.5-turbo",
+            messages = new object[]
+            {
+                new { role = "user", content = message }
+            },
+            max_tokens = 200
+        });
+
+        // Create UnityWebRequest
+        UnityWebRequest request = new UnityWebRequest(apiUrl, "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + apiKey);
+
+        // Send the request and wait for response
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string responseText = request.downloadHandler.text;
+            // Parse AI reply (simple method)
+            int start = responseText.IndexOf("\"content\":\"") + 11;
+            int end = responseText.IndexOf("\"}", start);
+            string aiReply = responseText.Substring(start, end - start);
+            callback(aiReply);
+        }
+        else
+        {
+            callback("Sorry, AI did not respond.");
+        }
+    }
+}
